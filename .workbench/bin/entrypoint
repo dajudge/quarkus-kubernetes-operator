@@ -1,0 +1,7 @@
+#! /bin/bash
+
+if [[ "true" == "$WB_INTERACTIVE" ]]; then
+    echo "You are now inside the operator development workbench."
+fi
+
+exec "$@"

@@ -1,0 +1,12 @@
+#! /bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+WB="$DIR/../workbench"
+
+$DIR/start-kind
+
+$WB kubectl delete --ignore-not-found ns play-operator
+$WB kubectl apply -f $DIR/../src/main/k8s/deployment.yml

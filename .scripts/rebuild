@@ -1,0 +1,15 @@
+#! /bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+WB="$DIR/../workbench"
+
+$DIR/install-registry
+
+$WB ./gradlew clean build
+
+IMAGE_NAME="$($DIR/registry-address)/playop:latest"
+echo "Building image: ${IMAGE_NAME}..."
+$DIR/kaniko  --context=/work/build/docker --destination=${IMAGE_NAME}

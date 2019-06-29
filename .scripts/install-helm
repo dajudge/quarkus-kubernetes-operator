@@ -1,0 +1,14 @@
+#! /bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+WB="$DIR/../workbench"
+
+$DIR/start-kind
+
+$WB helm version > /dev/null && exit 0
+
+$WB kubectl create -f $DIR/rbac-config.yml
+$WB helm init --service-account tiller --wait

@@ -1,0 +1,11 @@
+#! /bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+WB="$DIR/../workbench"
+
+PORT=$($WB kubectl get --namespace docker-registry -o jsonpath="{.spec.ports[0].nodePort}" services docker-registry)
+ADDRESS=$($WB kubectl get nodes --namespace docker-registry -o jsonpath="{.items[0].status.addresses[0].address}")
+echo $ADDRESS:$PORT

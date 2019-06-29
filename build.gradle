@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'io.quarkus' version '0.18.0' 
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies { 
+    implementation enforcedPlatform('io.quarkus:quarkus-bom:0.18.0')
+    implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.kubernetes:client-java:5.0.0'
+}
+
+configurations.compileClasspath.resolutionStrategy.dependencySubstitution {
+    substitute(module("org.jboss.slf4j:slf4j-jboss-logging"))
+            .because("Prefer logback for logging")
+            .with(module("ch.qos.logback:logback-classic:1.2.3"))
+
+}
+
+task dockerAssemble(type: Copy) {
+    dependsOn quarkusBuild
+
+    into "build/docker"
+
+    into(".") {
+        from "src/main/docker"
+        from "build/playop-runner.jar"
+    }
+
+    into("lib") {
+        from "build/lib"
+    }
+}
+
+build.dependsOn dockerAssemble

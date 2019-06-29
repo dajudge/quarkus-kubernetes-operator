@@ -1,0 +1,30 @@
+#! /bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+IMG=$(docker build -q $DIR/.workbench)
+
+if [[ -z $@ ]]; then
+    CMD="bash"
+    WB_INTERACTIVE=true
+else
+    WB_INTERACTIVE=false
+    CMD=$@
+fi
+
+mkdir -p $DIR/.state/.kube
+mkdir -p $DIR/.state/.helm
+
+docker run --rm \
+    -v /etc/passwd:/etc/passwd \
+    -v /etc/group:/etc/group \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v $DIR/.state/.kube:${HOME}/.kube \
+    -v $DIR/.state/.helm:${HOME}/.helm \
+    -v $HOME:$HOME \
+    -w $DIR \
+    -e USER="$USER" \
+    -e WB_INTERACTIVE="$WB_INTERACTIVE" \
+    --net host \
+    --privileged \
+    -it $IMG sudo -u ${USER} -i sh -c "cd $DIR; KUBECONFIG=\$(kind get kubeconfig-path --name=\"kind\") $CMD"

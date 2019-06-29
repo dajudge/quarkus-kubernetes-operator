@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: play-operator
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: play-operator
+  namespace: play-operator
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: play-operator-admin
+  namespace: play-operator
+subjects:
+  - kind: ServiceAccount
+    name: play-operator
+    namespace: play-operator
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: play-operator
+  namespace: play-operator
+  labels:
+    app: play-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: play-operator
+  template:
+    metadata:
+      labels:
+        app: play-operator
+    spec:
+      serviceAccountName: play-operator
+      containers:
+        - name: operator
+          image: localhost:30500/playop:latest
+          ports:
+            - containerPort: 8080

@@ -1,0 +1,13 @@
+#! /bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+WB="$DIR/../workbench"
+
+$DIR/install-helm
+./workbench helm status docker-registry > /dev/null || \
+    $WB helm install stable/docker-registry -f $DIR/registry-values.yml --name docker-registry --namespace docker-registry
+
+# TODO wait for docker registry

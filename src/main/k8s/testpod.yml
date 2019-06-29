@@ -1,0 +1,10 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nginx
+  annotations:
+    play.dajudge.com/managed: "true"
+spec:
+  containers:
+    - image: nginx
+      name: nginx
